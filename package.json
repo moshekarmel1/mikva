@@ -1,0 +1,32 @@
+{
+  "name": "mikva",
+  "version": "1.0.0",
+  "description": "Mikva calculation MEAN style",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moshekarmel1/mikva.git"
+  },
+  "keywords": [
+    "Mikva",
+    "Mikvah"
+  ],
+  "author": "moshe karmel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moshekarmel1/mikva/issues"
+  },
+  "homepage": "https://github.com/moshekarmel1/mikva#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-jwt": "^3.4.0",
+    "jsonwebtoken": "^7.1.9",
+    "mongoose": "^4.5.9",
+    "morgan": "^1.7.0",
+    "passport": "^0.3.2"
+  }
+}
