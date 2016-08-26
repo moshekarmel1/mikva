@@ -50,7 +50,6 @@ app.post('/register', function(req, res, next){
     user.username = req.body.username;
     user.setPassword(req.body.password);
     user.save(function (err){
-        console.log(err);
         if(err){
             if(err.code === 11000){
                 return res.status(400).json({message: 'Sorry that username is already taken'});
