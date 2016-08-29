@@ -6,6 +6,7 @@ var passport = require('passport');
 var jwt = require('express-jwt');
 require('./models/user');
 require('./models/flow');
+require('./passport');
 var User = mongoose.model('User');
 var Flow = mongoose.model('Flow');
 
@@ -28,7 +29,8 @@ app.all('/*', function(req, res, next) {
 //serve files from the public dir
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
-app.use(bodyParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 mongoose.connect('mongodb://localhost/mikva');
 
@@ -56,7 +58,7 @@ app.post('/register', function(req, res, next){
             }
             return next(err);
         }
-        return res.json({
+        return res.status(200).json({
             token: user.generateJWT()
         });
     });
@@ -71,7 +73,7 @@ app.post('/login', function(req, res, next){
             return next(err);
         }
         if(user){
-            return res.json({
+            return res.status(200).json({
                 token: user.generateJWT()
             });
         } else {
@@ -79,9 +81,23 @@ app.post('/login', function(req, res, next){
         }
     })(req, res, next);
 });
+
+const MikvaCalculation = require('./mikva');
 //route to post a post!
 app.get('/flows', auth, function(req, res, next) {
-  console.log(auth);
+  console.log(req.payload);
+  Flow.find({}, function(err, events){
+      if(err){
+          return next(err);
+      }
+      res.json(events);
+  });
+});
+
+//route to post a post!
+app.post('/flows', auth, function(req, res, next) {
+  var date = new Date();
+  var flow = new MikvaCalculation(date, true);
   Flow.find({}, function(err, events){
       if(err){
           return next(err);
