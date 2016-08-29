@@ -1,9 +1,19 @@
-.full button span {
+.green button span {
   background-color: limegreen;
   border-radius: 32px;
   color: black;
 }
-.partially button span {
+.yellow button span {
+  background-color: yellow;
+  border-radius: 32px;
+  color: black;
+}
+.red button span {
+  background-color: red;
+  border-radius: 32px;
+  color: black;
+}
+.orange button span {
   background-color: orange;
   border-radius: 32px;
   color: black;

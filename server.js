@@ -83,26 +83,28 @@ app.post('/login', function(req, res, next){
 });
 
 const MikvaCalculation = require('./mikva');
-//route to post a post!
+//route to get a users flows
 app.get('/flows', auth, function(req, res, next) {
-  console.log(req.payload);
-  Flow.find({}, function(err, events){
+  Flow.find({ user: req.payload._id }, function(err, flows){
       if(err){
           return next(err);
       }
-      res.json(events);
+      res.status(200).json(flows);
   });
 });
-
-//route to post a post!
+//route to post a new flow!
 app.post('/flows', auth, function(req, res, next) {
-  var date = new Date();
-  var flow = new MikvaCalculation(date, true);
-  Flow.find({}, function(err, events){
+  var date = req.body.date;
+  var beforeSunset = req.body.beforeSunset;
+  var mc = new MikvaCalculation(date, beforeSunset);
+  var flow = new Flow(mc);
+  flow.user = req.payload._id;
+  flow.beforeSunset = beforeSunset;
+  flow.save(function(err, flow){
       if(err){
           return next(err);
       }
-      res.json(events);
+      res.status(201).json(flow);
   });
 });
 

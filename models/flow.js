@@ -4,10 +4,10 @@ var FlowSchema = new mongoose.Schema({
     sawBlood: {
       type: Date
     },
-    hefsekTahara: {
+    hefsek: {
       type: Date
     },
-    mikvaNight: {
+    mikva: {
       type: Date
     },
     day30: {

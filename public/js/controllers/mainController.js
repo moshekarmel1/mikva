@@ -1,11 +1,46 @@
 angular.module('mikva').controller('MainCtrl', ['flowService', 'authService', '$scope',
 function(flowService, authService, $scope){
-  if(authService.isLoggedIn()){
+    $scope.events = [];
     flowService.getFlows().then(function(res){
       console.log(res);
       $scope.flows = res.data || [];
+      $scope.flows.forEach(function(flow){
+        $scope.events.push({
+          date: new Date(flow.sawBlood),
+          status: 'red'
+        });
+        $scope.events.push({
+          date: new Date(flow.mikva),
+          status: 'green'
+        });
+        $scope.events.push({
+          date: new Date(flow.hefsek),
+          status: 'orange'
+        });
+        $scope.events.push({
+          date: new Date(flow.day30),
+          status: 'yellow'
+        });
+        $scope.events.push({
+          date: new Date(flow.day31),
+          status: 'yellow'
+        });
+      });
     });
-  }
+
+  $scope.addFlow = function(beforeSunset){
+    flowService.createFlow({
+      date: new Date(),
+      beforeSunset: beforeSunset
+    }).then(function(res){
+      if(res.status === 201){
+        toastr.success('Flow saved successfully.');
+        $scope.flows.push(res.data);
+      }
+    }, function(err){
+      console.error(err);
+    });
+  };
 
 
 
@@ -40,27 +75,6 @@ function(flowService, authService, $scope){
  $scope.setDate = function(year, month, day) {
    $scope.dt = new Date(year, month, day);
  };
-
- var tomorrow = new Date();
- tomorrow.setDate(tomorrow.getDate() + 1);
- var y = new Date();
- y.setDate(tomorrow.getDate() - 10);
- var afterTomorrow = new Date(tomorrow);
- afterTomorrow.setDate(tomorrow.getDate() + 1);
- $scope.events = [
-   {
-     date: tomorrow,
-     status: 'full'
-   },
-   {
-     date: afterTomorrow,
-     status: 'partially'
-   },
-   {
-     date: y,
-     status: 'partially'
-   }
- ];
 
  function getDayClass(data) {
    var date = data.date,
