@@ -4,15 +4,15 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus" aria-hidden="true"></i> New Flow</button>
+      <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#newFlowModal"><i class="fa fa-plus" aria-hidden="true"></i> New Flow</button>
       <h4>Mikva Calendar</h4>
       <div style="display:inline-block; min-height:500px;">
-        <div uib-datepicker ng-model="dt" class="well well-sm" datepicker-options="options"></div>
+        <div ng-change="onSelect(dt)" uib-datepicker ng-model="dt" class="well well-sm" datepicker-options="options"></div>
       </div>
     </div>
   </div>
 </div>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="newFlowModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

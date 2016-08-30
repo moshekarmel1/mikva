@@ -104,7 +104,7 @@ app.get('/auth/google/callback',
     passport.authenticate('google', {
             successRedirect : '/',
             failureRedirect : '/'
-    });
+    })
 );
 
 const MikvaCalculation = require('./mikva');

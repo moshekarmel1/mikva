@@ -39,10 +39,10 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                   <li ng-show="isLoggedIn()">
-                      <a class="page-scroll" title="Currently logged in user" href="#"><i class="fa fa-user" aria-hidden="true"></i> Welcome {{currentUser()}}</a>
+                      <a class="page-scroll" title="Currently logged in user" href=""><i class="fa fa-user" aria-hidden="true"></i> Welcome {{currentUser()}}</a>
                   </li>
                   <li ng-show="isLoggedIn()">
-                      <a class="page-scroll" title="Log out" ng-click="logOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Log Out</a>
+                      <a class="page-scroll" title="Log out" href="" ng-click="logOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Log Out</a>
                   </li>
                   <li ng-show="!isLoggedIn()">
                       <a class="page-scroll" title="Log in" ui-sref="login"><i class="fa fa-sign-in" aria-hidden="true"></i> Log In</a>

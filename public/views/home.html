@@ -1,37 +1,12 @@
-<div class="container">
-  <div class="page-header" style="margin-top: 75px;">
-    <h1>Hello World</h1>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus" aria-hidden="true"></i> New Flow</button>
-      <h4>Mikva Calendar</h4>
-      <div style="display:inline-block; min-height:500px;">
-        <div uib-datepicker ng-model="dt" class="well well-sm" datepicker-options="options"></div>
-      </div>
-    </div>
+<div class="container text-center">
+  <div style="margin-top: 175px;">
+    <h2>Going to the mikva <i class="fa fa-tint" aria-hidden="true"></i></h2>
+    <br />
+    <h2>Just got a whole lot easier <i class="fa fa-child" aria-hidden="true"></i></h2>
+    <br />
+    <h2>Securely and privately track your important dates <i class="fa fa-calendar" aria-hidden="true"></i></h2>
+    <br />
+    <p ng-show="!isLoggedIn()"><a class="btn btn-primary btn-lg" ui-sref="login" role="button"><i class="fa fa-hand-pointer-o" aria-hidden="true"></i> Sign up</a></p>
+    <p ng-show="isLoggedIn()"><a class="btn btn-primary btn-lg" ui-sref="account" role="button"><i class="fa fa-cloud" aria-hidden="true"></i> Go to my Account</a></p>
   </div>
 </div>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Modal title</h4>
-      </div>
-      <div class="modal-body">
-        <div class="input-group">
-          <input type="text" class="form-control" uib-datepicker-popup="'dd-MMMM-yyyy'" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" ng-click="addFlow(true)" class="btn btn-primary"><i class="fa fa-sun-o" aria-hidden="true"></i> Before Sunset</button>
-        <button type="button" ng-click="addFlow(false)" class="btn btn-primary"><i class="fa fa-moon-o" aria-hidden="true"></i> After Sunset</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
