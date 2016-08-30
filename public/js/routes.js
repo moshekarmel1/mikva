@@ -13,6 +13,11 @@ angular.module('mikva').config(['$stateProvider', '$urlRouterProvider', function
         url: '/register',
         templateUrl: '/views/register.html',
         controller: 'LoginCtrl'
+    })
+    .state('account', {
+        url: '/account',
+        templateUrl: '/views/account.html',
+        controller: 'AccountCtrl'
     });
     $urlRouterProvider.otherwise('home');
 }]);

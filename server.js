@@ -26,11 +26,21 @@ app.all('/*', function(req, res, next) {
   }
 });
 
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
 //serve files from the public dir
 app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 mongoose.connect('mongodb://localhost/mikva');
 
@@ -81,6 +91,21 @@ app.post('/login', function(req, res, next){
         }
     })(req, res, next);
 });
+
+// =====================================
+// GOOGLE ROUTES =======================
+// =====================================
+// send to google to do the authentication
+// profile gets us their basic information including their name
+// email gets their emails
+app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+// the callback after google has authenticated the user
+app.get('/auth/google/callback',
+    passport.authenticate('google', {
+            successRedirect : '/',
+            failureRedirect : '/'
+    });
+);
 
 const MikvaCalculation = require('./mikva');
 //route to get a users flows
