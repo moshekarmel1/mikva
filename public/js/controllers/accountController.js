@@ -1,5 +1,5 @@
-angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService', '$timeout', '$scope',
-function(flowService, authService, $timeout, $scope){
+angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService', '$scope',
+function(flowService, authService, $scope){
     $scope.events = [];
 
     flowService.getFlows().then(function(res){
@@ -26,9 +26,7 @@ function(flowService, authService, $timeout, $scope){
               status: 'yellow'
             });
         });
-        $timeout(function () {
-          $scope.$apply();
-        });
+        $scope.dt = new Date();
     });
 
   $scope.addFlow = function(beforeSunset){

@@ -102,10 +102,10 @@ app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'e
 // the callback after google has authenticated the user
 app.get('/auth/google/callback',
     passport.authenticate('google', {
-            successRedirect : '/',
-            failureRedirect : '/'
-    })
-);
+        failureRedirect : '/'
+    }), function(req, res){
+        res.redirect('/?token=' + req.user.generateJWT());
+    });
 
 const MikvaCalculation = require('./mikva');
 //route to get a users flows
