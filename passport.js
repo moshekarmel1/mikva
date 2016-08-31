@@ -22,9 +22,9 @@ passport.use(new LocalStrategy(
 // GOOGLE ==================================================================
 // =========================================================================
 passport.use(new GoogleStrategy({
-    clientID        : process.env.clientID || '1028644396865-6udeeufsfu2rdoiv88ar5q9u1afcktb5.apps.googleusercontent.com',
-    clientSecret    : process.env.clientSecret || 'aKmbVsJYbVE9mgUXTuyjit3o',
-    callbackURL     : process.env.callbackURL || 'http://localhost:3000/auth/google/callback',
+    clientID        : process.env.clientID,
+    clientSecret    : process.env.clientSecret,
+    callbackURL     : process.env.callbackURL,
 },
 function(token, refreshToken, profile, done) {
     // make the code asynchronous

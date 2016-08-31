@@ -42,7 +42,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect('mongodb://localhost/mikva');
+mongoose.connect(process.env.MONGO_URI);
 
 //default home page
 app.get('/', function(req, res){

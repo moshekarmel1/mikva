@@ -5,8 +5,8 @@ function(authService, $location, $state, $stateParams, $scope){
     var queryParams = location.search.split('=');
     if(queryParams[0] === '?token'){
       authService.saveToken(queryParams[1]);
-      location.search = '';
-      $state.go('account');
+      location.href = '/#/account';
+      toastr.success('Logged in successfully!');
     }
   }
 }]);

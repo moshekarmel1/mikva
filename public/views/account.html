@@ -3,34 +3,52 @@
     <h1>Hello World</h1>
   </div>
   <div class="row">
-    <div class="col-md-12">
-      <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#newFlowModal"><i class="fa fa-plus" aria-hidden="true"></i> New Flow</button>
-      <h4>Mikva Calendar</h4>
+    <div class="col-md-6 col-sm-12 col-xs-12">
+      <h4 class="text-center">Mikva Calendar</h4>
       <div style="display:inline-block; min-height:500px;">
         <div ng-change="onSelect(dt)" uib-datepicker ng-model="dt" class="well well-sm" datepicker-options="options"></div>
       </div>
     </div>
+    <div class="col-md-6 col-sm-12 col-xs-12">
+      <h4 class="text-center">Flows</h4>
+      <ul class="list-group">
+        <li ng-repeat="flow in flows" class="list-group-item">
+          {{flow.sawBlood | date}}
+          <span ng-show="flow.beforeSunset" class="label label-warning pull-right">Before Sunset</span>
+          <span ng-hide="flow.beforeSunset" class="label label-default pull-right">After Sunset</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
-<div class="modal fade" id="newFlowModal" tabindex="-1" role="dialog">
+
+<div class="modal fade" id="dateModal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Modal title</h4>
+        <button type="button" class="close" ng-click="close()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{{dt | date}}</h4>
       </div>
       <div class="modal-body">
-        <div class="input-group">
-          <input type="text" class="form-control" uib-datepicker-popup="'dd-MMMM-yyyy'" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
+        <div class="row">
+          <div class="col-md-12">
+            <button ng-hide="addNew" type="button" ng-click="add()" class="btn btn-success pull-right"><i class="fa fa-plus" aria-hidden="true"></i> Add New Flow</button>
+          </div>
+        </div>
+        <br />
+        <div ng-show="!todaysEvents.length" class="row">
+          <div class="col-md-12">
+            <div class="alert alert-info">No event today. Click above to add a new Flow.</div>
+          </div>
+        </div>
+        <div ng-repeat="event in todaysEvents">
+          <div ng-show="event.color" class="alert alert-danger">{{event.title}}</div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-        <button type="button" ng-click="addFlow(true)" class="btn btn-primary"><i class="fa fa-sun-o" aria-hidden="true"></i> Before Sunset</button>
-        <button type="button" ng-click="addFlow(false)" class="btn btn-primary"><i class="fa fa-moon-o" aria-hidden="true"></i> After Sunset</button>
+        <button type="button" class="btn btn-default" ng-click="close()">Cancel</button>
+        <button ng-show="addNew" type="button" ng-click="addFlow(true)" class="btn btn-primary"><i class="fa fa-sun-o" aria-hidden="true"></i> Before Sunset</button>
+        <button ng-show="addNew" type="button" ng-click="addFlow(false)" class="btn btn-primary"><i class="fa fa-moon-o" aria-hidden="true"></i> After Sunset</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
