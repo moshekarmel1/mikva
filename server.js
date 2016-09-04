@@ -150,12 +150,21 @@ app.param('flow', function(req, res, next, id) {
 
 //route to edit an existing flow!
 app.put('/flows/:flow', auth, function(req, res, next) {
-  req.flow.save(function(err, flow){
-      if(err){
-          return next(err);
-      }
-      res.status(200).json(flow);
-  });
+    var flow = new MikvaCalculation(req.body.sawBlood,
+        req.body.beforeSunset, req.body.hefsek);
+    //make the updates
+    req.flow.beforeSunset = flow.beforeSunset;
+    req.flow.sawBlood = flow.sawBlood;
+    req.flow.hefsek = flow.hefsek;
+    req.flow.mikva = flow.mikva;
+    req.flow.day30 = flow.day30;
+    req.flow.day31 = flow.day31;
+    req.flow.save(function(err, flow){
+        if(err){
+            return next(err);
+        }
+        res.status(200).json(flow);
+    });
 });
 
 //route to get a specific flow!
