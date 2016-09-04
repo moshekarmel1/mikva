@@ -133,6 +133,36 @@ app.post('/flows', auth, function(req, res, next) {
   });
 });
 
+//flow param
+app.param('flow', function(req, res, next, id) {
+    var query = Flow.findById(id);
+    query.exec(function (err, flow){
+        if (err) {
+            return next(err);
+        }
+        if (!flow) {
+            return next(new Error('can\'t find flow'));
+        }
+        req.flow = flow;
+        return next();
+    });
+});
+
+//route to edit an existing flow!
+app.put('/flows/:flow', auth, function(req, res, next) {
+  req.flow.save(function(err, flow){
+      if(err){
+          return next(err);
+      }
+      res.status(200).json(flow);
+  });
+});
+
+//route to get a specific flow!
+app.get('/flows/:flow', auth, function(req, res, next) {
+    res.status(200).json(req.flow);
+});
+
 var PORT = process.env.PORT || '3000';
 
 var server = app.listen(PORT, function(){

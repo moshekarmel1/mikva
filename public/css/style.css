@@ -18,3 +18,13 @@
   border-radius: 32px;
   color: black;
 }
+.blue button span {
+  background-color: blue;
+  border-radius: 32px;
+  color: black;
+}
+.lightblue button span {
+  background-color: lightblue;
+  border-radius: 32px;
+  color: black;
+}

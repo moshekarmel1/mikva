@@ -18,6 +18,11 @@ angular.module('mikva').config(['$stateProvider', '$urlRouterProvider', function
         url: '/account',
         templateUrl: '/views/account.html',
         controller: 'AccountCtrl'
+    })
+    .state('flow', {
+        url: '/account/:flowId',
+        templateUrl: '/views/flow.html',
+        controller: 'FlowCtrl'
     });
     $urlRouterProvider.otherwise('home');
 }]);

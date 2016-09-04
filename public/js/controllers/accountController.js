@@ -5,6 +5,7 @@ function(flowService, authService, $scope){
     $scope.todaysEvents = [];
 
     flowService.getFlows().then(function(res){
+        console.log(res);
         $scope.flows = res.data || [];
         $scope.populateEvents();
     });
@@ -24,17 +25,17 @@ function(flowService, authService, $scope){
           $scope.events.push({
               date: new Date(flow.hefsek),
               title: 'Hefsek Tahara',
-              status: 'orange'
+              status: 'yellow'
           });
           $scope.events.push({
               date: new Date(flow.day30),
               title: 'Day 30',
-              status: 'yellow'
+              status: 'lightblue'
           });
           $scope.events.push({
               date: new Date(flow.day31),
               title: 'Day 31',
-              status: 'yellow'
+              status: 'lightblue'
           });
       });
       $scope.dt = $scope.dt.setHours(0,0,0,0);

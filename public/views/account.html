@@ -12,8 +12,10 @@
     <div class="col-md-6 col-sm-12 col-xs-12">
       <h4 class="text-center">Flows</h4>
       <ul class="list-group">
-        <li ng-repeat="flow in flows" class="list-group-item">
-          {{flow.sawBlood | date}}
+        <li ng-repeat="flow in flows | orderBy: '-sawBlood'" class="list-group-item">
+          <i ng-show="flow.beforeSunset" class="fa fa-sun-o" aria-hidden="true"></i>
+          <i ng-hide="flow.beforeSunset" class="fa fa-moon-o" aria-hidden="true"></i>
+          <a ui-sref="flow({ flowId: flow._id })">{{flow.sawBlood | date}}</a>
           <span ng-show="flow.beforeSunset" class="label label-warning pull-right">Before Sunset</span>
           <span ng-hide="flow.beforeSunset" class="label label-default pull-right">After Sunset</span>
         </li>
@@ -42,7 +44,10 @@
           </div>
         </div>
         <div ng-repeat="event in todaysEvents">
-          <div ng-show="event.color" class="alert alert-danger">{{event.title}}</div>
+          <div ng-show="event.status == 'red'" class="alert alert-danger">{{event.title}}</div>
+          <div ng-show="event.status == 'yellow'" class="alert alert-warning">{{event.title}}</div>
+          <div ng-show="event.status == 'green'" class="alert alert-success">{{event.title}}</div>
+          <div ng-show="event.status == 'lightblue'" class="alert alert-info">{{event.title}}</div>
         </div>
       </div>
       <div class="modal-footer">

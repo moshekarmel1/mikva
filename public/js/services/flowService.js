@@ -9,8 +9,24 @@ angular.module('mikva').factory('flowService', ['$http', 'authService', '$window
         });
     };
 
+    flow.getFlowById = function(id) {
+        return $http.get('/flows/' + id, {
+            headers:{
+                Authorization: 'Bearer ' + authService.getToken()
+            }
+        });
+    };
+
     flow.createFlow = function(flow) {
         return $http.post('/flows', flow, {
+            headers: {
+                Authorization: 'Bearer ' + authService.getToken()
+            }
+        });
+    };
+
+    flow.updateFlow = function(flow) {
+        return $http.put('/flows/' + flow._id, flow, {
             headers: {
                 Authorization: 'Bearer ' + authService.getToken()
             }
