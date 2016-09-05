@@ -19,6 +19,9 @@ var FlowSchema = new mongoose.Schema({
     haflaga: {
       type: Date
     },
+    diffInDays: {
+      type: Number
+    },
     beforeSunset: {
       type: Boolean
     },

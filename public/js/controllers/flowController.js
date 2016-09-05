@@ -7,7 +7,6 @@ function(flowService, $stateParams, $scope){
 
     $scope.updateFlow = function(){
         flowService.updateFlow($scope.flow).then(function(res){
-            console.log(res);
             if(res.data){
                 $scope.flow = res.data;
                 makeDates();
@@ -21,5 +20,6 @@ function(flowService, $stateParams, $scope){
         $scope.flow.mikva = new Date($scope.flow.mikva);
         $scope.flow.day30 = new Date($scope.flow.day30);
         $scope.flow.day31 = new Date($scope.flow.day31);
+        if($scope.flow.haflaga) $scope.flow.haflaga = new Date($scope.flow.haflaga);
     }
 }]);

@@ -37,6 +37,13 @@ function(flowService, authService, $scope){
               title: 'Day 31',
               status: 'lightblue'
           });
+          if(flow.haflaga){
+              $scope.events.push({
+                  date: new Date(flow.haflaga),
+                  title: 'Haflaga (' + flow.diffInDays + ' days)',
+                  status: 'lightblue'
+              });
+          }
       });
       $scope.dt = $scope.dt.setHours(0,0,0,0);
     };

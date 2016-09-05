@@ -110,27 +110,32 @@ app.get('/auth/google/callback',
 const MikvaCalculation = require('./mikva');
 //route to get a users flows
 app.get('/flows', auth, function(req, res, next) {
-  Flow.find({ user: req.payload._id }, function(err, flows){
-      if(err){
-          return next(err);
-      }
-      res.status(200).json(flows);
-  });
+    Flow.find({ user: req.payload._id }, function(err, flows){
+        if(err){
+            return next(err);
+        }
+        res.status(200).json(flows);
+    });
 });
 //route to post a new flow!
 app.post('/flows', auth, function(req, res, next) {
-  var date = req.body.date;
-  var beforeSunset = req.body.beforeSunset;
-  var mc = new MikvaCalculation(date, beforeSunset);
-  var flow = new Flow(mc);
-  flow.user = req.payload._id;
-  flow.beforeSunset = beforeSunset;
-  flow.save(function(err, flow){
-      if(err){
-          return next(err);
-      }
-      res.status(201).json(flow);
-  });
+    //first get past flows
+    Flow.find({ user: req.payload._id }, function(err, flows){
+        if(err){
+            return next(err);
+        }
+        var date = req.body.date;
+        var beforeSunset = req.body.beforeSunset;
+        var mc = new MikvaCalculation(date, beforeSunset, null, flows);
+        var flow = new Flow(mc);
+        flow.user = req.payload._id;
+        flow.save(function(er, fl){
+            if(er){
+                return next(er);
+            }
+            res.status(201).json(fl);
+        });
+    });
 });
 
 //flow param
@@ -151,7 +156,7 @@ app.param('flow', function(req, res, next, id) {
 //route to edit an existing flow!
 app.put('/flows/:flow', auth, function(req, res, next) {
     var flow = new MikvaCalculation(req.body.sawBlood,
-        req.body.beforeSunset, req.body.hefsek);
+        req.body.beforeSunset, req.body.hefsek, null);
     //make the updates
     req.flow.beforeSunset = flow.beforeSunset;
     req.flow.sawBlood = flow.sawBlood;
