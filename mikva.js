@@ -29,13 +29,10 @@ function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows){
         }, {});*/
         //assume last flow is the prior one
         var lastFlow = pastFlows[pastFlows.length - 1];
-        console.log(lastFlow);
         if(lastFlow){//} && (new Date(lastFlow.sawBlood) < this.sawBlood)){
             var diff = new Date(this.sawBlood).getTime() - new Date(lastFlow.sawBlood).getTime();
-            console.log("diff", diff);
             diffInDays = diff / (24 * 60 * 60 * 1000);
-            diffInDays = figureOutDiff(lastFlow.beforeSunset, this.beforeSunset, diffInDays);
-            console.log("diffInDays", diffInDays);
+            diffInDays = Math.round(figureOutDiff(lastFlow.beforeSunset, this.beforeSunset, diffInDays));
         }
     }
     if(diffInDays){

@@ -7,6 +7,9 @@ function(flowService, authService, $scope){
 
     flowService.getFlows().then(function(res){
         $scope.flows = res.data || [];
+        $scope.flows.forEach(function(flow){
+            if(flow.diffInDays) flow.diffInDays = Math.round(flow.diffInDays);
+        });
         $scope.populateEvents();
         $scope.todaysEvents = $scope.events.filter(function(event){
             return event.date.setHours(0,0,0,0) === new Date().setHours(0,0,0,0);
