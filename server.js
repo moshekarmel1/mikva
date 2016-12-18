@@ -4,9 +4,12 @@ var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var jwt = require('express-jwt');
+var fs = require('fs');
+
 require('./models/user');
 require('./models/flow');
 require('./passport');
+
 var User = mongoose.model('User');
 var Flow = mongoose.model('Flow');
 
@@ -175,6 +178,14 @@ app.put('/flows/:flow', auth, function(req, res, next) {
 //route to get a specific flow!
 app.get('/flows/:flow', auth, function(req, res, next) {
     res.status(200).json(req.flow);
+});
+
+app.delete('/flows/:flowId', auth, function(req, res, next) {
+    Flow.findOneAndRemove({ _id: req.params.flowId }, function(err){
+        if(err) res.status(500).json('Delete failed');
+
+        res.status(200).json('Deleted');
+    });
 });
 
 var PORT = process.env.PORT || '3000';

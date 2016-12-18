@@ -1,13 +1,16 @@
 angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService', '$scope',
 function(flowService, authService, $scope){
+    $scope.today = new Date();
     $scope.events = [];
     $scope.addNew = false;
     $scope.todaysEvents = [];
 
     flowService.getFlows().then(function(res){
-        console.log(res);
         $scope.flows = res.data || [];
         $scope.populateEvents();
+        $scope.todaysEvents = $scope.events.filter(function(event){
+            return event.date.setHours(0,0,0,0) === new Date().setHours(0,0,0,0);
+        });
     });
 
     $scope.populateEvents = function(){
@@ -79,6 +82,41 @@ function(flowService, authService, $scope){
         }, function(err){
             console.error(err);
         });
+    };
+
+    $scope.export = function(){
+        var A = [['FlowDate', 'HefsekTahara', 'MikvaNight', 'Day30', 'Day31', 'Haflaga', 'DayDifference', 'BeforeSunset']];
+
+        $scope.flows.forEach(function(flow){
+            A.push([
+                new Date(flow.sawBlood).toDateString(),
+                new Date(flow.hefsek).toDateString(),
+                new Date(flow.mikva).toDateString(),
+                new Date(flow.day30).toDateString(),
+                new Date(flow.day31).toDateString(),
+                (flow.haflaga) ? new Date(flow.haflaga).toDateString() : 'N/A',
+                flow.diffInDays,
+                (flow.beforeSunset) ? 'Yes' : 'No'
+            ]);
+        });
+
+        var csvRows = [];
+
+        for(var i=0, l=A.length; i<l; ++i){
+            csvRows.push(A[i].join(','));
+        }
+
+        var csvString = csvRows.join("\r\n");
+
+        console.log(csvString);
+
+        var a         = document.createElement('a');
+        a.href        = 'data:application/csv;charset=utf-8,' +  encodeURIComponent(csvString);
+        a.target      = '_blank';
+        a.download    = 'flows.csv';
+
+        document.body.appendChild(a);
+        a.click();
     };
 
 

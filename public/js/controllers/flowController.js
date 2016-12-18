@@ -1,5 +1,5 @@
-angular.module('mikva').controller('FlowCtrl', ['flowService', '$stateParams', '$scope',
-function(flowService, $stateParams, $scope){
+angular.module('mikva').controller('FlowCtrl', ['flowService', '$state', '$stateParams', '$scope',
+function(flowService, $state, $stateParams, $scope){
     flowService.getFlowById($stateParams.flowId).then(function(res){
         $scope.flow = res.data || [];
         makeDates();
@@ -10,7 +10,26 @@ function(flowService, $stateParams, $scope){
             if(res.data){
                 $scope.flow = res.data;
                 makeDates();
+                toastr.success('Flow updated successfully!');
             }
+        }, function(err){
+            console.error(err);
+            toastr.error('Flow update failed. Please try again.');
+        });
+    };
+
+    $scope.delete = function(flow){
+        $scope.modalFlow = flow;
+        $('#deleteModal').modal();
+    };
+
+    $scope.deleteFlow = function(){
+        flowService.deleteFlow($scope.modalFlow).then(function(res){
+            toastr.success('Deleted successfully!');
+            $('#deleteModal').modal('hide');
+            $state.go('account');
+        }, function(err){
+            toastr.error('Flow was not deleted, please try again.');
         });
     };
 

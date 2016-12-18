@@ -33,5 +33,13 @@ angular.module('mikva').factory('flowService', ['$http', 'authService', '$window
         });
     };
 
+    flow.deleteFlow = function(flow) {
+        return $http.delete('/flows/' + flow._id, {
+            headers: {
+                Authorization: 'Bearer ' + authService.getToken()
+            }
+        });
+    };
+
     return flow;
 }]);

@@ -1,6 +1,6 @@
 <div class="container">
   <div class="page-header" style="margin-top: 75px;">
-    <h1>Hello World</h1>
+    <h1>{{today | date}}</h1>
   </div>
   <div class="row">
     <div class="col-md-6 col-sm-12 col-xs-12">
@@ -20,6 +20,7 @@
           <span ng-hide="flow.beforeSunset" class="label label-default pull-right">After Sunset</span>
         </li>
       </ul>
+      <button class="btn btn-default text-center" ng-click="export()"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export</button>
     </div>
   </div>
 </div>
