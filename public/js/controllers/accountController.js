@@ -76,14 +76,13 @@ function(flowService, authService, $scope){
             date: $scope.dt,
             beforeSunset: beforeSunset
         }).then(function(res){
-            if(res.status === 201){
-                toastr.success('Flow saved successfully.');
-                $scope.close();
-                $scope.flows.push(res.data);
-                $scope.populateEvents();
-            }
+            toastr.success('Flow saved successfully.');
+            $scope.close();
+            $scope.flows.push(res.data);
+            $scope.populateEvents();
         }, function(err){
             console.error(err);
+            toastr.error('Flow did not save. Please try again.');
         });
     };
 
