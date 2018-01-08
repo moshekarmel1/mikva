@@ -1,19 +1,18 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
-var passport = require('passport');
-var jwt = require('express-jwt');
-var fs = require('fs');
+const express = require('express');
+const mongoose = require('mongoose');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const jwt = require('express-jwt');
 
 require('./models/user');
 require('./models/flow');
 require('./passport');
 
-var User = mongoose.model('User');
-var Flow = mongoose.model('Flow');
+const User = mongoose.model('User');
+const Flow = mongoose.model('Flow');
 
-var app = express();
+const app = express();
 
 app.all('/*', function(req, res, next) {
   // CORS headers
@@ -45,15 +44,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect(process.env.MONGO_URI);
+// global error handler
+app.use(function(err, req, res, next) {
+  // Only handle `next(err)` calls
+  if(err){
+    res.status(500).json(err.message);
+  }
+});
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1/flows');
 
 //default home page
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/views/index.html');
 });
 //authentication middleware
-var auth = jwt({
-    secret: process.env.SECRET, userProperty: 'payload'
+const auth = jwt({
+    secret: process.env.SECRET || 'TEST', userProperty: 'payload'
 });
 
 //route to register new user
@@ -61,7 +68,7 @@ app.post('/register', function(req, res, next){
     if(!req.body.username || !req.body.password){
         return res.status(400).json({message: 'Please fill out all fields'});
     }
-    var user = new User();
+    const user = new User();
     user.username = req.body.username;
     user.setPassword(req.body.password);
     user.save(function (err){
@@ -103,20 +110,19 @@ app.post('/login', function(req, res, next){
 // email gets their emails
 app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 // the callback after google has authenticated the user
-app.get('/auth/google/callback',
-    passport.authenticate('google', {
-        failureRedirect : '/'
-    }), function(req, res){
-        res.redirect('/?token=' + req.user.generateJWT());
-    });
+app.get('/auth/google/callback', passport.authenticate('google', {
+    failureRedirect : '/'
+}), function(req, res){
+    res.redirect('/?token=' + req.user.generateJWT());
+});
 
 const MikvaCalculation = require('./mikva');
+
 //route to get a users flows
 app.get('/flows', auth, function(req, res, next) {
     Flow.find({ user: req.payload._id }, function(err, flows){
-        if(err){
-            return next(err);
-        }
+        if(err) return next(err);
+
         res.status(200).json(flows);
     });
 });
@@ -124,26 +130,24 @@ app.get('/flows', auth, function(req, res, next) {
 app.post('/flows', auth, function(req, res, next) {
     //first get past flows
     Flow.find({ user: req.payload._id }, function(err, flows){
-        if(err){
-            return next(err);
-        }
-        var date = req.body.date;
-        var beforeSunset = req.body.beforeSunset;
-        var mc = new MikvaCalculation(date, beforeSunset, null, flows);
-        var flow = new Flow(mc);
+        if(err) return next(err);
+
+        const date = req.body.date;
+        const beforeSunset = req.body.beforeSunset;
+        const mc = new MikvaCalculation(date, beforeSunset, null, flows);
+        const flow = new Flow(mc);
         flow.user = req.payload._id;
-        flow.save(function(er, fl){
-            if(er){
-                return next(er);
-            }
-            res.status(201).json(fl);
+        flow.save(function(err, result){
+            if(err) return next(er);
+            
+            res.status(201).json(result);
         });
     });
 });
 
 //flow param
 app.param('flow', function(req, res, next, id) {
-    var query = Flow.findById(id);
+    const query = Flow.findById(id);
     query.exec(function (err, flow){
         if (err) {
             return next(err);
@@ -158,8 +162,7 @@ app.param('flow', function(req, res, next, id) {
 
 //route to edit an existing flow!
 app.put('/flows/:flow', auth, function(req, res, next) {
-    var flow = new MikvaCalculation(req.body.sawBlood,
-        req.body.beforeSunset, req.body.hefsek, null);
+    const flow = new MikvaCalculation(req.body.sawBlood, req.body.beforeSunset, req.body.hefsek, null);
     //make the updates
     req.flow.beforeSunset = flow.beforeSunset;
     req.flow.sawBlood = flow.sawBlood;
@@ -168,9 +171,8 @@ app.put('/flows/:flow', auth, function(req, res, next) {
     req.flow.day30 = flow.day30;
     req.flow.day31 = flow.day31;
     req.flow.save(function(err, flow){
-        if(err){
-            return next(err);
-        }
+        if(err) return next(err);
+
         res.status(200).json(flow);
     });
 });
@@ -182,14 +184,14 @@ app.get('/flows/:flow', auth, function(req, res, next) {
 
 app.delete('/flows/:flowId', auth, function(req, res, next) {
     Flow.findOneAndRemove({ _id: req.params.flowId }, function(err){
-        if(err) res.status(500).json('Delete failed');
+        if(err) return next(new Error('Delete failed'));
 
         res.status(200).json('Deleted');
     });
 });
 
-var PORT = process.env.PORT || '3000';
+const PORT = process.env.PORT || '3000';
 
-var server = app.listen(PORT, function(){
+const server = app.listen(PORT, function(){
   console.log('Server is running!');
 });

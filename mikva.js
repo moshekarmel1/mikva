@@ -24,12 +24,9 @@ function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows){
     }
     var diffInDays;
     if(pastFlows && pastFlows.length){
-        /*var lastFlow = pastFlows.reduce(function(flow, newFlow){
-            return new Date(flow.sawBlood) > new Date(newFlow.sawBlood);
-        }, {});*/
         //assume last flow is the prior one
         var lastFlow = pastFlows[pastFlows.length - 1];
-        if(lastFlow){//} && (new Date(lastFlow.sawBlood) < this.sawBlood)){
+        if(lastFlow && (new Date(lastFlow.sawBlood) < this.sawBlood)){
             var diff = new Date(this.sawBlood).getTime() - new Date(lastFlow.sawBlood).getTime();
             diffInDays = diff / (24 * 60 * 60 * 1000);
             diffInDays = Math.round(figureOutDiff(lastFlow.beforeSunset, this.beforeSunset, diffInDays));

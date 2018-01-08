@@ -1,6 +1,6 @@
 angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService', '$scope',
 function(flowService, authService, $scope){
-    $scope.today = new Date();
+    $scope.now = new Date();
     $scope.events = [];
     $scope.addNew = false;
     $scope.todaysEvents = [];
@@ -12,7 +12,7 @@ function(flowService, authService, $scope){
         });
         $scope.populateEvents();
         $scope.todaysEvents = $scope.events.filter(function(event){
-            return event.date.setHours(0,0,0,0) === new Date().setHours(0,0,0,0);
+            return moment(event.date).isSame($scope.now, 'day');
         });
     });
 
@@ -25,12 +25,12 @@ function(flowService, authService, $scope){
           });
           $scope.events.push({
               date: new Date(flow.mikva),
-              title: 'Mikva Night',
+              title: 'You can go to the Mikva anytime after sunset.',
               status: 'green'
           });
           $scope.events.push({
               date: new Date(flow.hefsek),
-              title: 'Hefsek Tahara',
+              title: 'Hefsek Tahara should be done before sunset.',
               status: 'yellow'
           });
           $scope.events.push({
@@ -56,9 +56,25 @@ function(flowService, authService, $scope){
 
     $scope.onSelect = function(dt){
         $('#dateModal').modal();
-        dt = new Date(dt).setHours(0,0,0,0);
+        $scope.dt = new Date(dt);
         $scope.todaysEvents = $scope.events.filter(function(event){
-            return event.date.setHours(0,0,0,0) === dt;
+            return moment(event.date).isSame($scope.dt, 'day');
+        });
+    };
+
+    $scope.next = function(dt){
+        $scope.dt.setDate($scope.dt.getDate() + 1);
+        $scope.dt = new Date($scope.dt);
+        $scope.todaysEvents = $scope.events.filter(function(event){
+            return moment(event.date).isSame($scope.dt, 'day');
+        });
+    };
+
+    $scope.prev = function(dt){
+        $scope.dt.setDate($scope.dt.getDate() - 1);
+        $scope.dt = new Date($scope.dt);
+        $scope.todaysEvents = $scope.events.filter(function(event){
+            return moment(event.date).isSame($scope.dt, 'day');
         });
     };
 
@@ -81,7 +97,6 @@ function(flowService, authService, $scope){
             $scope.flows.push(res.data);
             $scope.populateEvents();
         }, function(err){
-            console.error(err);
             toastr.error('Flow did not save. Please try again.');
         });
     };
@@ -109,8 +124,6 @@ function(flowService, authService, $scope){
         }
 
         var csvString = csvRows.join("\r\n");
-
-        console.log(csvString);
 
         var a         = document.createElement('a');
         a.href        = 'data:application/csv;charset=utf-8,' +  encodeURIComponent(csvString);
