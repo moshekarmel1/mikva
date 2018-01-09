@@ -6,5 +6,6 @@
     <br />
     <h2>Securely and privately track your important dates <i class="fa fa-calendar" aria-hidden="true"></i></h2>
     <br />
-    <p><a href="/auth/google" class="btn btn-primary btn-lg"><i class="fa fa-google-plus"></i> Login with Google</a></p>
+    <p ng-if="!isLoggedIn()"><a href="/auth/google" class="btn btn-primary btn-lg"><i class="fa fa-google-plus"></i> Login with Google</a></p>
+    <p ng-if="isLoggedIn()"><a ui-sref="account" class="btn btn-primary btn-lg"><i class="fa fa-cloud"></i> Go to my Account</a></p>
 </div>

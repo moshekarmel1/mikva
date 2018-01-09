@@ -159,7 +159,7 @@ app.get('/status', auth, function(req, res, next) {
         });
 
         if(!red && !yellow){
-            green = 'Hakol B\'seder!';
+            green = 'Hakol B\'seder';
         }
 
         res.status(200).json({
