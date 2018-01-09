@@ -1,6 +1,6 @@
 <div class="container">
   <div class="page-header" style="margin-top: 75px;">
-    <h1>{{now | date}} <small>use the calendar to select a date</small></h1>
+    <h1 ng-class="{'text-danger': status.red, 'text-warning': status.yellow, 'text-success': status.green }">{{now | date}} - {{status.red || status.yellow || status.green}}</h1>
   </div>
   <div class="row">
     <div class="col-md-6 col-sm-12 col-xs-12">
@@ -30,7 +30,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" ng-click="close()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"><button class="btn btn-link" ng-click="prev(dt)">&laquo;</button> {{dt | date}} <button class="btn btn-link" ng-click="next(dt)">&raquo;</button></h4>
+        <h4 class="modal-title text-center"><button class="btn btn-link" ng-click="prev(dt)">&laquo;</button> {{dt | date}} <button class="btn btn-link" ng-click="next(dt)">&raquo;</button></h4>
       </div>
       <div class="modal-body">
         <div ng-show="!todaysEvents.length" class="row">

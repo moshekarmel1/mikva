@@ -1,20 +1,28 @@
-angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService', '$scope',
-function(flowService, authService, $scope){
+angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService', '$q', '$scope',
+function(flowService, authService, $q, $scope){
     $scope.now = new Date();
     $scope.events = [];
     $scope.addNew = false;
     $scope.todaysEvents = [];
+    
+    function init(){
+      $q.all([
+        flowService.getFlows(),
+        flowService.getStatus()
+      ]).then(function(res){
+          $scope.flows = res[0].data || [];
+          $scope.flows.forEach(function(flow){
+              if(flow.diffInDays) flow.diffInDays = Math.round(flow.diffInDays);
+          });
+          $scope.populateEvents();
+          $scope.todaysEvents = $scope.events.filter(function(event){
+              return moment(event.date).isSame($scope.now, 'day');
+          });
+          $scope.status = res[1].data;
+      });
+    }
 
-    flowService.getFlows().then(function(res){
-        $scope.flows = res.data || [];
-        $scope.flows.forEach(function(flow){
-            if(flow.diffInDays) flow.diffInDays = Math.round(flow.diffInDays);
-        });
-        $scope.populateEvents();
-        $scope.todaysEvents = $scope.events.filter(function(event){
-            return moment(event.date).isSame($scope.now, 'day');
-        });
-    });
+    init();
 
     $scope.populateEvents = function(){
       $scope.flows.forEach(function(flow){
@@ -51,7 +59,7 @@ function(flowService, authService, $scope){
               });
           }
       });
-      $scope.dt = $scope.dt.setHours(0,0,0,0);
+      $scope.dt = removeTime($scope.dt);
     };
 
     $scope.onSelect = function(dt){
@@ -94,8 +102,7 @@ function(flowService, authService, $scope){
         }).then(function(res){
             toastr.success('Flow saved successfully.');
             $scope.close();
-            $scope.flows.push(res.data);
-            $scope.populateEvents();
+            init();
         }, function(err){
             toastr.error('Flow did not save. Please try again.');
         });
@@ -168,3 +175,7 @@ function(flowService, authService, $scope){
        return '';
    }
 }]);
+
+function removeTime(date){
+    return new Date(new Date(date).setHours(0,0,0,0));
+}

@@ -126,6 +126,49 @@ app.get('/flows', auth, function(req, res, next) {
         res.status(200).json(flows);
     });
 });
+
+function removeTime(date){
+    return new Date(new Date(date).setHours(0,0,0,0));
+}
+
+//route to get a users status
+app.get('/status', auth, function(req, res, next) {
+    let green, yellow, red;
+    Flow.find({ user: req.payload._id }, function(err, flows){
+        if(err) return next(err);
+        const today = removeTime(new Date()).getTime();
+        flows.forEach(flow => {
+            // check red
+            if(removeTime(flow.sawBlood).getTime() <= today && removeTime(flow.mikva).getTime() >= today){
+                if(removeTime(flow.hefsek).getTime() >= today){
+                    red = 'Nidda';
+                }else{
+                    red = 'Shiva Nekiyim';
+                }
+            }
+            // check yellow
+            if(removeTime(flow.day30).getTime() == today){
+                yellow = 'Day 30';
+            }
+            if(removeTime(flow.day31).getTime() == today){
+                yellow = 'Day 31';
+            }
+            if(flow.haflaga && removeTime(flow.haflaga).getTime() == today){
+                yellow = 'Haflaga';
+            }
+        });
+
+        if(!red && !yellow){
+            green = 'Hakol B\'seder!';
+        }
+
+        res.status(200).json({
+            red: red,
+            yellow: yellow,
+            green: green
+        });
+    });
+});
 //route to post a new flow!
 app.post('/flows', auth, function(req, res, next) {
     //first get past flows

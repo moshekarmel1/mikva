@@ -9,6 +9,14 @@ angular.module('mikva').factory('flowService', ['$http', 'authService', '$window
         });
     };
 
+     flow.getStatus = function() {
+        return $http.get('/status', {
+            headers:{
+                Authorization: 'Bearer ' + authService.getToken()
+            }
+        });
+    };
+
     flow.getFlowById = function(id) {
         return $http.get('/flows/' + id, {
             headers:{
