@@ -24,7 +24,7 @@ passport.use(new LocalStrategy(
 passport.use(new GoogleStrategy({
     clientID        : process.env.clientID,
     clientSecret    : process.env.clientSecret,
-    callbackURL     : process.env.callbackURL,
+    callbackURL     : process.env.callbackURL || '/auth/google/callback',
 },
 function(token, refreshToken, profile, done) {
     // make the code asynchronous
