@@ -60,7 +60,7 @@ app.get('/', function(req, res){
 });
 //authentication middleware
 const auth = jwt({
-    secret: process.env.SECRET || 'TEST', userProperty: 'payload'
+    secret: process.env.SECRET, userProperty: 'payload'
 });
 
 //route to register new user
