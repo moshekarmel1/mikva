@@ -21,6 +21,6 @@ exports.modules = {
 			_id: user.user_id,
 			username: user.username,
 			exp: parseInt(exp.getTime() / 1000),
-		}, process.env.SECRET);
+		}, process.env.SECRET || 'pizza');
 	}
 }

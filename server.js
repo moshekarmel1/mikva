@@ -9,7 +9,6 @@ const db = require('./db/index');
 const dbScripts = require('./db/scripts').modules;
 require('./passport');
 
-
 const app = express();
 
 app.all('/*', function(req, res, next) {
@@ -62,7 +61,7 @@ app.get('/', function(req, res){
 });
 // authentication middleware
 const auth = jwt({
-    secret: process.env.SECRET, algorithms: ['HS256'], userProperty: 'payload'
+    secret: process.env.SECRET || 'pizza', algorithms: ['HS256'], userProperty: 'payload'
 });
 // route to register new user
 app.post('/register', function(req, res, next){
@@ -79,7 +78,7 @@ app.post('/register', function(req, res, next){
         user.googleId
     ], function (err, response){
         if(err){
-            if(err.code === 11000){
+            if(err.code === '23505'){
                 return res.status(400).json({message: 'Sorry that username is already taken'});
             }
             return next(err);

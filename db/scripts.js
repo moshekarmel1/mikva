@@ -23,6 +23,7 @@ exports.modules = {
                 FOREIGN KEY (user_id) 
                     REFERENCES app_user (user_id)
         );
+        CREATE UNIQUE INDEX IF NOT EXISTS unique_username ON app_user (username);
     `,
     createUser: `
         INSERT INTO app_user (username, hash, salt, google_id) VALUES 

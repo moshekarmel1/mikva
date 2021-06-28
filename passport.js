@@ -25,8 +25,8 @@ passport.use(new LocalStrategy(
 // GOOGLE ==================================================================
 // =========================================================================
 passport.use(new GoogleStrategy({
-    clientID        : process.env.clientID,
-    clientSecret    : process.env.clientSecret,
+    clientID        : process.env.clientID || 'pizza',
+    clientSecret    : process.env.clientSecret || 'pizza',
     callbackURL     : process.env.callbackURL || '/auth/google/callback',
 },
 function(token, refreshToken, profile, done) {
