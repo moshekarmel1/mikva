@@ -62,7 +62,7 @@ app.get('/', function(req, res){
 });
 // authentication middleware
 const auth = jwt({
-    secret: process.env.SECRET, userProperty: 'payload'
+    secret: process.env.SECRET, algorithms: ['HS256'], userProperty: 'payload'
 });
 // route to register new user
 app.post('/register', function(req, res, next){
