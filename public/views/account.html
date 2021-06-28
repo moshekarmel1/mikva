@@ -12,12 +12,12 @@
     <div class="col-md-6 col-sm-12 col-xs-12" ng-if="flows.length">
       <h4 class="text-center">Past Flows</h4>
       <ul class="list-group">
-        <li ng-repeat="flow in flows | orderBy: '-sawBlood'" class="list-group-item">
-          <i ng-show="flow.beforeSunset" class="fa fa-sun-o" aria-hidden="true"></i>
-          <i ng-hide="flow.beforeSunset" class="fa fa-moon-o" aria-hidden="true"></i>
-          <a ui-sref="flow({ flowId: flow._id })">{{flow.sawBlood | date}} <span ng-show="flow.diffInDays">({{flow.diffInDays}} days)</span></a>
-          <span ng-show="flow.beforeSunset" class="label label-warning pull-right">Before Sunset</span>
-          <span ng-hide="flow.beforeSunset" class="label label-default pull-right">After Sunset</span>
+        <li ng-repeat="flow in flows | orderBy: '-saw_blood'" class="list-group-item">
+          <i ng-show="flow.before_sunset" class="fa fa-sun-o" aria-hidden="true"></i>
+          <i ng-hide="flow.before_sunset" class="fa fa-moon-o" aria-hidden="true"></i>
+          <a ui-sref="flow({ flowId: flow.flow_id })">{{flow.saw_blood | date}} <span ng-show="flow.diffInDays">({{flow.diffInDays}} days)</span></a>
+          <span ng-show="flow.before_sunset" class="label label-warning pull-right">Before Sunset</span>
+          <span ng-hide="flow.before_sunset" class="label label-default pull-right">After Sunset</span>
         </li>
       </ul>
       <button class="btn btn-default text-center" ng-click="export()"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export</button>

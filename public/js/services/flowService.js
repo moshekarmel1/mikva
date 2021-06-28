@@ -34,7 +34,7 @@ angular.module('mikva').factory('flowService', ['$http', 'authService', '$window
     };
 
     flow.updateFlow = function(flow) {
-        return $http.put('/flows/' + flow._id, flow, {
+        return $http.put('/flows/' + flow.flow_id, flow, {
             headers: {
                 Authorization: 'Bearer ' + authService.getToken()
             }
@@ -42,7 +42,7 @@ angular.module('mikva').factory('flowService', ['$http', 'authService', '$window
     };
 
     flow.deleteFlow = function(flow) {
-        return $http.delete('/flows/' + flow._id, {
+        return $http.delete('/flows/' + flow.flow_id, {
             headers: {
                 Authorization: 'Bearer ' + authService.getToken()
             }

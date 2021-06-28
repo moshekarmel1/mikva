@@ -9,18 +9,18 @@ function removeTime(date){
 }
 
 function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows){
-    this.sawBlood = date;
-    this.beforeSunset = beforeSunset;
+    this.saw_blood = date;
+    this.before_sunset = beforeSunset;
     if(beforeSunset){
-        this.hefsek = addDays(this.sawBlood, 4);
+        this.hefsek = addDays(this.saw_blood, 4);
         this.mikva = addDays(this.hefsek, 7);
-        this.day30 = addDays(this.mikva, 18);
+        this.day_30 = addDays(this.mikva, 18);
     }else{
-        this.hefsek = addDays(this.sawBlood, 5);
+        this.hefsek = addDays(this.saw_blood, 5);
         this.mikva = addDays(this.hefsek, 7);
-        this.day30 = addDays(this.mikva, 17);
+        this.day_30 = addDays(this.mikva, 17);
     }
-    this.day31 = addDays(this.day30, 1);
+    this.day_31 = addDays(this.day_30, 1);
     //the hefsek tahra can be updated if necessary
     if(hefsekUpdate){
         this.hefsek = new Date(hefsekUpdate);
@@ -30,15 +30,15 @@ function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows){
     if(pastFlows && pastFlows.length){
         //assume last flow is the prior one
         var lastFlow = pastFlows[pastFlows.length - 1];
-        if(lastFlow && (removeTime(lastFlow.sawBlood) < removeTime(this.sawBlood))){
-            var diff = new Date(this.sawBlood).getTime() - new Date(lastFlow.sawBlood).getTime();
+        if(lastFlow && (removeTime(lastFlow.saw_blood) < removeTime(this.saw_blood))){
+            var diff = new Date(this.saw_blood).getTime() - new Date(lastFlow.saw_blood).getTime();
             diffInDays = diff / (24 * 60 * 60 * 1000);
-            diffInDays = Math.round(figureOutDiff(lastFlow.beforeSunset, this.beforeSunset, diffInDays));
+            diffInDays = Math.round(figureOutDiff(lastFlow.beforeSunset, this.before_sunset, diffInDays));
         }
     }
     if(diffInDays){
-        this.haflaga = new Date(this.sawBlood).setDate(new Date(this.sawBlood).getDate() + diffInDays);
-        this.diffInDays = diffInDays + 1;
+        this.haflaga = new Date(this.saw_blood).setDate(new Date(this.saw_blood).getDate() + diffInDays);
+        this.diff_in_days = diffInDays + 1;
     }
 };
 

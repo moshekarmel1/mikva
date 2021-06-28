@@ -1,17 +1,20 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-var mongoose = require('mongoose');
-var User = mongoose.model('User');
+
+const userAuth = require('./auth/user').modules;
+const db = require('./db/index');
+const dbScripts = require('./db/scripts').modules;
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
-        User.findOne({ username: username }, function (err, user) {
+        db.query(dbScripts.findUserByUsername, [username], function (err, userResponse) {
             if (err) { return done(err); }
-            if (!user) {
+            if (!userResponse || !userResponse.rows || !userResponse.rows[0]) {
                 return done(null, false, { message: 'Incorrect username. If this is your first time here, you need to register.' });
             }
-            if (!user.validPassword(password)) {
+            const user = userResponse.rows[0];
+            if (!userAuth.validPassword(password, user)) {
                 return done(null, false, { message: 'Incorrect password.' });
             }
             return done(null, user);
@@ -31,23 +34,28 @@ function(token, refreshToken, profile, done) {
     // User.findOne won't fire until we have all our data back from Google
     process.nextTick(function() {
         // try to find the user based on their google id
-        User.findOne({ googleId : profile.id }, function(err, user) {
+        db.query(dbScripts.findUserByGoogleId, [profile.id], function (err, userResponse) {
             if (err)
                 return done(err);
+            
+            let user;
+            if (userResponse && userResponse.rows) {
+                user = userResponse.rows[0];
+            }
             if (user) {
                 // if a user is found, log them in
                 return done(null, user);
             } else {
                 // if the user isnt in our database, create a new user
-                var newUser          = new User();
-                // set all of the relevant information
-                newUser.googleId   = profile.id;
-                newUser.username  = profile.displayName;
-                // save the user
-                newUser.save(function(err) {
+                db.query(dbScripts.createUser, [
+                    profile.displayName,
+                    null,
+                    null,
+                    profile.id
+                ], function(err, userResponse) {
                     if (err) throw err;
                     
-                    return done(null, newUser);
+                    return done(null, userResponse.rows[0]);
                 });
             }
         });

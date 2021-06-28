@@ -1,16 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const jwt = require('express-jwt');
 
-require('./models/user');
-require('./models/flow');
+const userAuth = require('./auth/user').modules;
+const db = require('./db/index');
+const dbScripts = require('./db/scripts').modules;
 require('./passport');
 
-const User = mongoose.model('User');
-const Flow = mongoose.model('Flow');
 
 const app = express();
 
@@ -51,39 +49,48 @@ app.use(function(err, req, res, next) {
     res.status(500).json(err.message);
   }
 });
+// Populate the `Users` & `Flows` tables
+db.query(dbScripts.initTables, [], (err, res) => {
+    if (err) {
+        console.log(err.stack)
+    }
+});
 
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1/flows');
-
-//default home page
+// default home page
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/views/index.html');
 });
-//authentication middleware
+// authentication middleware
 const auth = jwt({
     secret: process.env.SECRET, userProperty: 'payload'
 });
-
-//route to register new user
+// route to register new user
 app.post('/register', function(req, res, next){
     if(!req.body.username || !req.body.password){
         return res.status(400).json({message: 'Please fill out all fields'});
     }
-    const user = new User();
+    let user = {};
     user.username = req.body.username;
-    user.setPassword(req.body.password);
-    user.save(function (err){
+    user = userAuth.setPassword(req.body.password, user);
+    db.query(dbScripts.createUser, [
+        user.username,
+        user.hash,
+        user.salt,
+        user.googleId
+    ], function (err, response){
         if(err){
             if(err.code === 11000){
                 return res.status(400).json({message: 'Sorry that username is already taken'});
             }
             return next(err);
         }
+        user.user_id = response.rows[0].user_id;
         return res.status(200).json({
-            token: user.generateJWT()
+            token: userAuth.generateJWT(user)
         });
     });
 });
-//login route
+// login route
 app.post('/login', function(req, res, next){
     if(!req.body.username || !req.body.password){
         return res.status(400).json({message: 'Please fill out all fields'});
@@ -94,14 +101,13 @@ app.post('/login', function(req, res, next){
         }
         if(user){
             return res.status(200).json({
-                token: user.generateJWT()
+                token: userAuth.generateJWT(user)
             });
         } else {
             return res.status(401).json(info);
         }
     })(req, res, next);
 });
-
 // =====================================
 // GOOGLE ROUTES =======================
 // =====================================
@@ -113,33 +119,34 @@ app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'e
 app.get('/auth/google/callback', passport.authenticate('google', {
     failureRedirect : '/'
 }), function(req, res){
-    res.redirect('/?token=' + req.user.generateJWT());
+    res.redirect('/?token=' + userAuth.generateJWT(req.user));
 });
 
 const MikvaCalculation = require('./mikva');
 
-//route to get a users flows
+// route to get a users flows
 app.get('/flows', auth, function(req, res, next) {
-    Flow.find({ user: req.payload._id }, function(err, flows){
+    db.query(dbScripts.findFlowsByUser, [ req.payload._id ], function(err, flowResponse){
         if(err) return next(err);
 
-        res.status(200).json(flows);
+        res.status(200).json(flowResponse.rows);
     });
 });
 
 function removeTime(date){
     return new Date(new Date(date).setHours(0,0,0,0));
 }
-
-//route to get a users status
+// route to get a users status
 app.get('/status', auth, function(req, res, next) {
     let green, yellow, red;
-    Flow.find({ user: req.payload._id }, function(err, flows){
+    db.query(dbScripts.findFlowsByUser, [ req.payload._id ], function(err, flowResponse){
         if(err) return next(err);
+
         const today = removeTime(new Date()).getTime();
+        const flows = flowResponse.rows;
         flows.forEach(flow => {
             // check red
-            if(removeTime(flow.sawBlood).getTime() <= today && removeTime(flow.mikva).getTime() >= today){
+            if(removeTime(flow.saw_blood).getTime() <= today && removeTime(flow.mikva).getTime() >= today){
                 if(removeTime(flow.hefsek).getTime() >= today){
                     red = 'Nidda';
                 }else{
@@ -169,64 +176,86 @@ app.get('/status', auth, function(req, res, next) {
         });
     });
 });
-//route to post a new flow!
+// route to post a new flow!
 app.post('/flows', auth, function(req, res, next) {
-    //first get past flows
-    Flow.find({ user: req.payload._id }, function(err, flows){
+    // first get past flows
+    db.query(dbScripts.findFlowsByUser, [ req.payload._id ], function(err, flowResponse){
         if(err) return next(err);
 
         const date = req.body.date;
         const beforeSunset = req.body.beforeSunset;
-        const mc = new MikvaCalculation(date, beforeSunset, null, flows);
-        const flow = new Flow(mc);
-        flow.user = req.payload._id;
-        flow.save(function(err, result){
-            if(err) return next(er);
+        const mc = new MikvaCalculation(date, beforeSunset, null, flowResponse.rows);
+        db.query(dbScripts.createFlow, [
+            mc.saw_blood, 
+            mc.hefsek, 
+            mc.mikva, 
+            mc.day_30, 
+            mc.day_31, 
+            mc.haflaga, 
+            mc.diff_in_days, 
+            mc.before_sunset, 
+            req.payload._id
+        ], function(err, result){
+            if(err) return next(err);
             
-            res.status(201).json(result);
+            res.status(201).json(result.rows[0]);
         });
     });
 });
-
-//flow param
+// flow param
 app.param('flow', function(req, res, next, id) {
-    const query = Flow.findById(id);
-    query.exec(function (err, flow){
+    db.query(dbScripts.findFlowById, [id], function (err, flowResponse){
         if (err) {
             return next(err);
         }
-        if (!flow) {
-            return next(new Error('can\'t find flow'));
+        if (!flowResponse.rows) {
+            return next(new Error('Can\'t find flow'));
         }
-        req.flow = flow;
+        req.flow = flowResponse.rows[0];
         return next();
     });
 });
 
-//route to edit an existing flow!
+// route to edit an existing flow!
 app.put('/flows/:flow', auth, function(req, res, next) {
-    const flow = new MikvaCalculation(req.body.sawBlood, req.body.beforeSunset, req.body.hefsek, null);
-    //make the updates
-    req.flow.beforeSunset = flow.beforeSunset;
-    req.flow.sawBlood = flow.sawBlood;
-    req.flow.hefsek = flow.hefsek;
-    req.flow.mikva = flow.mikva;
-    req.flow.day30 = flow.day30;
-    req.flow.day31 = flow.day31;
-    req.flow.save(function(err, flow){
+    if (!req.flow) {
+        return res.status(400).json('Flow does not exist.');
+    }
+    if (req.flow.user_id !== req.payload._id) {
+        return res.status(401).json('Unauthorized');
+    }
+    const flow = new MikvaCalculation(req.body.saw_blood, req.body.before_sunset, req.body.hefsek, null);
+    // make the updates
+    db.query(dbScripts.updateFlow, [
+        req.flow.flow_id,
+        flow.saw_blood, 
+        flow.hefsek, 
+        flow.mikva, 
+        flow.day_30, 
+        flow.day_31, 
+        flow.before_sunset
+    ], function(err, flowResponse){
         if(err) return next(err);
 
-        res.status(200).json(flow);
+        res.status(200).json(flowResponse.rows[0]);
     });
 });
-
-//route to get a specific flow!
+// route to get a specific flow
 app.get('/flows/:flow', auth, function(req, res, next) {
+    if (req.flow.user_id !== req.payload._id) {
+        return res.status(401).json('Unauthorized');
+    }
     res.status(200).json(req.flow);
 });
-
-app.delete('/flows/:flowId', auth, function(req, res, next) {
-    Flow.findOneAndRemove({ _id: req.params.flowId }, function(err){
+// route to delete a specific flow
+app.delete('/flows/:flow', auth, function(req, res, next) {
+    if (!req.flow) {
+        return res.status(400).json('Flow does not exist.');
+    }
+    if (req.flow.user_id !== req.payload._id) {
+        return res.status(401).json('Unauthorized');
+    }
+    db.query(dbScripts.deleteFlow, [ req.flow.flow_id ], function(err){
         if(err) return next(new Error('Delete failed'));
 
         res.status(200).json('Deleted');

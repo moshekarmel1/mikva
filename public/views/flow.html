@@ -7,7 +7,7 @@
         <form name="flow_form" ng-submit="updateFlow()">
           <div class="form-group">
               <label class="control-label" for="sawBlood">Flow Date</label>
-              <input type="date" name="sawBlood" ng-model="flow.sawBlood" class="form-control" />
+              <input type="date" name="sawBlood" ng-model="flow.saw_blood" class="form-control" />
           </div>
           <div class="form-group">
               <label class="control-label" for="hefsek">Hefsek Tahara</label>
@@ -19,11 +19,11 @@
           </div>
           <div class="form-group">
               <label class="control-label" for="day30">Day 30</label>
-              <input type="date" name="day30" disabled="disabled" ng-model="flow.day30" class="form-control" />
+              <input type="date" name="day30" disabled="disabled" ng-model="flow.day_30" class="form-control" />
           </div>
           <div class="form-group">
               <label class="control-label" for="day31">Day 31</label>
-              <input type="date" name="day31" disabled="disabled" ng-model="flow.day31" class="form-control" />
+              <input type="date" name="day31" disabled="disabled" ng-model="flow.day_31" class="form-control" />
           </div>
           <div class="form-group">
               <label class="control-label" for="haflaga">Haflaga ({{flow.diffInDays}} days)</label>
@@ -32,7 +32,7 @@
           <div class="form-group">
               <div class="checkbox">
                 <label>
-                  <input ng-model="flow.beforeSunset" type="checkbox"> Before Sunset?
+                  <input ng-model="flow.before_sunset" type="checkbox"> Before Sunset?
                 </label>
               </div>
           </div>

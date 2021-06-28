@@ -12,7 +12,7 @@ function(flowService, authService, $q, $scope){
       ]).then(function(res){
           $scope.flows = res[0].data || [];
           $scope.flows.forEach(function(flow){
-              if(flow.diffInDays) flow.diffInDays = Math.round(flow.diffInDays);
+              if(flow.diff_in_days) flow.diff_in_days = Math.round(flow.diff_in_days);
           });
           $scope.populateEvents();
           $scope.todaysEvents = $scope.events.filter(function(event){
@@ -27,8 +27,8 @@ function(flowService, authService, $q, $scope){
     $scope.populateEvents = function(){
       $scope.flows.forEach(function(flow){
           $scope.events.push({
-              date: new Date(flow.sawBlood),
-              title: 'Flow Start' + ((flow.beforeSunset) ? ' (before sunset)' : ' (after sunset)'),
+              date: new Date(flow.saw_blood),
+              title: 'Flow Start' + ((flow.before_sunset) ? ' (before sunset)' : ' (after sunset)'),
               status: 'red'
           });
           $scope.events.push({
@@ -42,19 +42,19 @@ function(flowService, authService, $q, $scope){
               status: 'yellow'
           });
           $scope.events.push({
-              date: new Date(flow.day30),
+              date: new Date(flow.day_30),
               title: 'Day 30',
               status: 'lightblue'
           });
           $scope.events.push({
-              date: new Date(flow.day31),
+              date: new Date(flow.day_31),
               title: 'Day 31',
               status: 'lightblue'
           });
           if(flow.haflaga){
               $scope.events.push({
                   date: new Date(flow.haflaga),
-                  title: 'Haflaga (' + flow.diffInDays + ' days)',
+                  title: 'Haflaga (' + flow.diff_in_days + ' days)',
                   status: 'lightblue'
               });
           }
@@ -113,14 +113,14 @@ function(flowService, authService, $q, $scope){
 
         $scope.flows.forEach(function(flow){
             A.push([
-                new Date(flow.sawBlood).toDateString(),
+                new Date(flow.saw_blood).toDateString(),
                 new Date(flow.hefsek).toDateString(),
                 new Date(flow.mikva).toDateString(),
-                new Date(flow.day30).toDateString(),
-                new Date(flow.day31).toDateString(),
+                new Date(flow.day_30).toDateString(),
+                new Date(flow.day_31).toDateString(),
                 (flow.haflaga) ? new Date(flow.haflaga).toDateString() : 'N/A',
-                flow.diffInDays,
-                (flow.beforeSunset) ? 'Yes' : 'No'
+                flow.diff_in_days,
+                (flow.before_sunset) ? 'Yes' : 'No'
             ]);
         });
 
