@@ -1,7 +1,7 @@
 # Mikva
-Mikva calculator PEAN style
+Mikva calculator PEAN (Postgres, Express.js, Angular.js, Node.js) style
 
-See it live here [http://mikva.xyz]
+See it live [here](https://mikva.fly.dev/#/home)
 
 # Run Locally
 
