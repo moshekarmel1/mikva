@@ -9,7 +9,7 @@ function removeTime(date) {
 }
 
 function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows) {
-    this.saw_blood = date;
+    this.saw_blood = removeTime(date);
     this.before_sunset = beforeSunset;
     this.hefsek = addDays(this.saw_blood, beforeSunset ? 4 : 5);
     this.mikva = addDays(this.hefsek, 7);
@@ -17,7 +17,7 @@ function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows) {
     this.day_31 = addDays(this.day_30, 1);
     //the hefsek tahara can be updated if necessary
     if (hefsekUpdate) {
-        this.hefsek = new Date(hefsekUpdate);
+        this.hefsek = removeTime(hefsekUpdate);
         this.mikva = addDays(this.hefsek, 7);
     }
     var diffInDays;

@@ -182,6 +182,7 @@ app.post('/flows', auth, function(req, res, next) {
         if(err) return next(err);
 
         const date = req.body.date;
+        console.log(date, typeof date, req.body);
         const beforeSunset = req.body.beforeSunset;
         const mc = new MikvaCalculation(date, beforeSunset, null, flowResponse.rows);
         db.query(dbScripts.createFlow, [
