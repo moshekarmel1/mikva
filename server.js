@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const jwt = require('express-jwt');
+const moment = require('moment');
 
 const userAuth = require('./auth/user').modules;
 const db = require('./db/index');
@@ -11,26 +12,26 @@ require('./passport');
 
 const app = express();
 
-app.all('/*', function(req, res, next) {
-  // CORS headers
-  res.header("Access-Control-Allow-Origin", req.headers.origin); // restrict it to the required domain
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header("Access-Control-Allow-Credentials", "true");
-  // Set custom headers for CORS
-  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
-  if (req.method == 'OPTIONS') {
-    res.status(200).end();
-  } else {
-    next();
-  }
+app.all('/*', function (req, res, next) {
+    // CORS headers
+    res.header("Access-Control-Allow-Origin", req.headers.origin); // restrict it to the required domain
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header("Access-Control-Allow-Credentials", "true");
+    // Set custom headers for CORS
+    res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+    if (req.method == 'OPTIONS') {
+        res.status(200).end();
+    } else {
+        next();
+    }
 });
 
-passport.serializeUser(function(user, done) {
-  done(null, user);
+passport.serializeUser(function (user, done) {
+    done(null, user);
 });
 
-passport.deserializeUser(function(user, done) {
-  done(null, user);
+passport.deserializeUser(function (user, done) {
+    done(null, user);
 });
 
 //serve files from the public dir
@@ -42,11 +43,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // global error handler
-app.use(function(err, req, res, next) {
-  // Only handle `next(err)` calls
-  if(err){
-    res.status(500).json(err.message);
-  }
+app.use(function (err, req, res, next) {
+    // Only handle `next(err)` calls
+    if (err) {
+        res.status(500).json(err.message);
+    }
 });
 // Populate the `Users` & `Flows` tables
 db.query(dbScripts.initTables, [], (err, res) => {
@@ -56,17 +57,17 @@ db.query(dbScripts.initTables, [], (err, res) => {
 });
 
 // default home page
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/public/views/index.html');
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/public/views/index.html');
 });
 // authentication middleware
 const auth = jwt({
     secret: process.env.SECRET || 'pizza', algorithms: ['HS256'], userProperty: 'payload'
 });
 // route to register new user
-app.post('/register', function(req, res, next){
-    if(!req.body.username || !req.body.password){
-        return res.status(400).json({message: 'Please fill out all fields'});
+app.post('/register', function (req, res, next) {
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).json({ message: 'Please fill out all fields' });
     }
     let user = {};
     user.username = req.body.username;
@@ -76,10 +77,10 @@ app.post('/register', function(req, res, next){
         user.hash,
         user.salt,
         user.googleId
-    ], function (err, response){
-        if(err){
-            if(err.code === '23505'){
-                return res.status(400).json({message: 'Sorry that username is already taken'});
+    ], function (err, response) {
+        if (err) {
+            if (err.code === '23505') {
+                return res.status(400).json({ message: 'Sorry that username is already taken' });
             }
             return next(err);
         }
@@ -90,15 +91,15 @@ app.post('/register', function(req, res, next){
     });
 });
 // login route
-app.post('/login', function(req, res, next){
-    if(!req.body.username || !req.body.password){
-        return res.status(400).json({message: 'Please fill out all fields'});
+app.post('/login', function (req, res, next) {
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).json({ message: 'Please fill out all fields' });
     }
-    passport.authenticate('local', function(err, user, info){
-        if(err){
+    passport.authenticate('local', function (err, user, info) {
+        if (err) {
             return next(err);
         }
-        if(user){
+        if (user) {
             return res.status(200).json({
                 token: userAuth.generateJWT(user)
             });
@@ -113,58 +114,58 @@ app.post('/login', function(req, res, next){
 // send to google to do the authentication
 // profile gets us their basic information including their name
 // email gets their emails
-app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 // the callback after google has authenticated the user
 app.get('/auth/google/callback', passport.authenticate('google', {
-    failureRedirect : '/'
-}), function(req, res){
+    failureRedirect: '/'
+}), function (req, res) {
     res.redirect('/?token=' + userAuth.generateJWT(req.user));
 });
 
 const MikvaCalculation = require('./mikva');
 
 // route to get a users flows
-app.get('/flows', auth, function(req, res, next) {
-    db.query(dbScripts.findFlowsByUser, [ req.payload._id ], function(err, flowResponse){
-        if(err) return next(err);
+app.get('/flows', auth, function (req, res, next) {
+    db.query(dbScripts.findFlowsByUser, [req.payload._id], function (err, flowResponse) {
+        if (err) return next(err);
 
         res.status(200).json(flowResponse.rows);
     });
 });
 
-function removeTime(date){
-    return new Date(new Date(date).setHours(0,0,0,0));
+function removeTime(date) {
+    return new Date(new Date(date).setHours(0, 0, 0, 0));
 }
 // route to get a users status
-app.get('/status', auth, function(req, res, next) {
+app.get('/status', auth, function (req, res, next) {
     let green, yellow, red;
-    db.query(dbScripts.findFlowsByUser, [ req.payload._id ], function(err, flowResponse){
-        if(err) return next(err);
+    db.query(dbScripts.findFlowsByUser, [req.payload._id], function (err, flowResponse) {
+        if (err) return next(err);
 
         const today = removeTime(new Date()).getTime();
         const flows = flowResponse.rows;
         flows.forEach(flow => {
             // check red
-            if(removeTime(flow.saw_blood).getTime() <= today && removeTime(flow.mikva).getTime() >= today){
-                if(removeTime(flow.hefsek).getTime() >= today){
+            if (moment(flow.saw_blood).isSameOrBefore(today, 'day') && moment(flow.mikva).isSameOrAfter(today, 'day')) {
+                if (moment(flow.hefsek).isSameOrAfter(today, 'day')) {
                     red = 'Nidda';
-                }else{
+                } else {
                     red = 'Shiva Nekiyim';
                 }
             }
             // check yellow
-            if(removeTime(flow.day30).getTime() == today){
+            if (moment(flow.day_30).isSame(today, 'day')) {
                 yellow = 'Day 30';
             }
-            if(removeTime(flow.day31).getTime() == today){
+            if (moment(flow.day_31).isSame(today, 'day')) {
                 yellow = 'Day 31';
             }
-            if(flow.haflaga && removeTime(flow.haflaga).getTime() == today){
+            if (flow.haflaga && moment(flow.haflaga).isSame(today, 'day')) {
                 yellow = 'Haflaga';
             }
         });
 
-        if(!red && !yellow){
+        if (!red && !yellow) {
             green = 'Hakol B\'seder';
         }
 
@@ -176,35 +177,35 @@ app.get('/status', auth, function(req, res, next) {
     });
 });
 // route to post a new flow!
-app.post('/flows', auth, function(req, res, next) {
+app.post('/flows', auth, function (req, res, next) {
     // first get past flows
-    db.query(dbScripts.findFlowsByUser, [ req.payload._id ], function(err, flowResponse){
-        if(err) return next(err);
+    db.query(dbScripts.findFlowsByUser, [req.payload._id], function (err, flowResponse) {
+        if (err) return next(err);
 
         const date = req.body.date;
         console.log(date, typeof date, req.body);
         const beforeSunset = req.body.beforeSunset;
         const mc = new MikvaCalculation(date, beforeSunset, null, flowResponse.rows);
         db.query(dbScripts.createFlow, [
-            mc.saw_blood, 
-            mc.hefsek, 
-            mc.mikva, 
-            mc.day_30, 
-            mc.day_31, 
-            mc.haflaga, 
-            mc.diff_in_days, 
-            mc.before_sunset, 
+            mc.saw_blood,
+            mc.hefsek,
+            mc.mikva,
+            mc.day_30,
+            mc.day_31,
+            mc.haflaga,
+            mc.diff_in_days,
+            mc.before_sunset,
             req.payload._id
-        ], function(err, result){
-            if(err) return next(err);
-            
+        ], function (err, result) {
+            if (err) return next(err);
+
             res.status(201).json(result.rows[0]);
         });
     });
 });
 // flow param
-app.param('flow', function(req, res, next, id) {
-    db.query(dbScripts.findFlowById, [id], function (err, flowResponse){
+app.param('flow', function (req, res, next, id) {
+    db.query(dbScripts.findFlowById, [id], function (err, flowResponse) {
         if (err) {
             return next(err);
         }
@@ -217,7 +218,7 @@ app.param('flow', function(req, res, next, id) {
 });
 
 // route to edit an existing flow!
-app.put('/flows/:flow', auth, function(req, res, next) {
+app.put('/flows/:flow', auth, function (req, res, next) {
     if (!req.flow) {
         return res.status(400).json('Flow does not exist.');
     }
@@ -228,35 +229,35 @@ app.put('/flows/:flow', auth, function(req, res, next) {
     // make the updates
     db.query(dbScripts.updateFlow, [
         req.flow.flow_id,
-        flow.saw_blood, 
-        flow.hefsek, 
-        flow.mikva, 
-        flow.day_30, 
-        flow.day_31, 
+        flow.saw_blood,
+        flow.hefsek,
+        flow.mikva,
+        flow.day_30,
+        flow.day_31,
         flow.before_sunset
-    ], function(err, flowResponse){
-        if(err) return next(err);
+    ], function (err, flowResponse) {
+        if (err) return next(err);
 
         res.status(200).json(flowResponse.rows[0]);
     });
 });
 // route to get a specific flow
-app.get('/flows/:flow', auth, function(req, res, next) {
+app.get('/flows/:flow', auth, function (req, res, next) {
     if (req.flow.user_id !== req.payload._id) {
         return res.status(401).json('Unauthorized');
     }
     res.status(200).json(req.flow);
 });
 // route to delete a specific flow
-app.delete('/flows/:flow', auth, function(req, res, next) {
+app.delete('/flows/:flow', auth, function (req, res, next) {
     if (!req.flow) {
         return res.status(400).json('Flow does not exist.');
     }
     if (req.flow.user_id !== req.payload._id) {
         return res.status(401).json('Unauthorized');
     }
-    db.query(dbScripts.deleteFlow, [ req.flow.flow_id ], function(err){
-        if(err) return next(new Error('Delete failed'));
+    db.query(dbScripts.deleteFlow, [req.flow.flow_id], function (err) {
+        if (err) return next(new Error('Delete failed'));
 
         res.status(200).json('Deleted');
     });
@@ -264,6 +265,6 @@ app.delete('/flows/:flow', auth, function(req, res, next) {
 
 const PORT = process.env.PORT || '3000';
 
-const server = app.listen(PORT, function(){
-  console.log('Server is running!');
+const server = app.listen(PORT, function () {
+    console.log('Server is running!');
 });
