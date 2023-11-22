@@ -182,7 +182,9 @@ app.post('/flows', auth, function (req, res, next) {
     db.query(dbScripts.findFlowsByUser, [req.payload._id], function (err, flowResponse) {
         if (err) return next(err);
 
-        const date = req.body.date;
+        let date = req.body.date;
+        // remove timezone and convert to UTC
+        date = new Date(date).toISOString().split('T')[0] + 'T00:00:00.000'
         console.log(date, typeof date, req.body);
         const beforeSunset = req.body.beforeSunset;
         const mc = new MikvaCalculation(date, beforeSunset, null, flowResponse.rows);

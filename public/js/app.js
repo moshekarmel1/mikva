@@ -1,1 +1,1 @@
-angular.module('mikva', ['ui.router', 'angularMoment', 'ui.bootstrap']);
+angular.module('mikva', ['ui.router', 'ui.bootstrap']);

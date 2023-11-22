@@ -2,7 +2,7 @@
   <div class="page-header" style="margin-top: 75px;">
     <h1 ng-class="{'text-danger': status.red, 'text-warning': status.yellow, 'text-success': status.green }">{{status.red || status.yellow || status.green}} <i ng-class="{'fa fa-exclamation-circle': status.red, 'fa fa-exclamation-triangle': status.yellow, 'fa fa-check-circle': status.green }" aria-hidden="true"></i> <small>Current status on {{now | date}}</small></h1>
   </div>
-  <div class="row">
+  <div class="row" ng-if="isLoaded">
     <div class="col-md-6 col-sm-12 col-xs-12">
       <h4>Mikva Calendar</h4>
       <div style="display:inline-block; min-height:350px;">
