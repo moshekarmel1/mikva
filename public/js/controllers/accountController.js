@@ -21,6 +21,7 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
             $scope.isLoaded = false;
             $scope.flows = [];
             $scope.status = null;
+            $scope.events = [];
             $scope.todaysEvents = [];
             $scope.dateMap = {};
             $q.all([
@@ -30,6 +31,12 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
                 $scope.flows = res[0].data || [];
                 $scope.flows.forEach(function (flow) {
                     if (flow.diff_in_days) flow.diff_in_days = Math.round(flow.diff_in_days);
+                    flow.saw_blood = new Date(flow.saw_blood);
+                    flow.hefsek = new Date(flow.hefsek);
+                    flow.mikva = new Date(flow.mikva);
+                    flow.day_30 = new Date(flow.day_30);
+                    flow.day_31 = new Date(flow.day_31);
+                    if (flow.haflaga) flow.haflaga = new Date(flow.haflaga);
                 });
                 $scope.populateEvents();
                 $scope.todaysEvents = $scope.dateMap[new Date().toISOString().split('T')[0]];
@@ -43,33 +50,33 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
         $scope.populateEvents = function () {
             $scope.flows.forEach(function (flow) {
                 $scope.events.push({
-                    date: new Date(flow.saw_blood),
+                    date: flow.saw_blood,
                     title: 'Flow Start' + ((flow.before_sunset) ? ' (before sunset)' : ' (after sunset)'),
                     status: 'red'
                 });
                 $scope.events.push({
-                    date: new Date(flow.hefsek),
+                    date: flow.hefsek,
                     title: 'Hefsek Tahara should be done before sunset.',
                     status: 'yellow'
                 });
                 $scope.events.push({
-                    date: new Date(flow.mikva),
+                    date: flow.mikva,
                     title: 'You can go to the Mikva anytime after sunset.',
                     status: 'green'
                 });
                 $scope.events.push({
-                    date: new Date(flow.day_30),
+                    date: flow.day_30,
                     title: 'Day 30',
                     status: 'lightblue'
                 });
                 $scope.events.push({
-                    date: new Date(flow.day_31),
+                    date: flow.day_31,
                     title: 'Day 31',
                     status: 'lightblue'
                 });
                 if (flow.haflaga) {
                     $scope.events.push({
-                        date: new Date(flow.haflaga),
+                        date: flow.haflaga,
                         title: 'Haflaga (' + flow.diff_in_days + ' days)',
                         status: 'lightblue'
                     });
@@ -126,12 +133,12 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
 
             $scope.flows.forEach(function (flow) {
                 A.push([
-                    new Date(flow.saw_blood).toDateString(),
-                    new Date(flow.hefsek).toDateString(),
-                    new Date(flow.mikva).toDateString(),
-                    new Date(flow.day_30).toDateString(),
-                    new Date(flow.day_31).toDateString(),
-                    (flow.haflaga) ? new Date(flow.haflaga).toDateString() : 'N/A',
+                    flow.saw_blood.toDateString(),
+                    flow.hefsek.toDateString(),
+                    flow.mikva.toDateString(),
+                    flow.day_30.toDateString(),
+                    flow.day_31.toDateString(),
+                    (flow.haflaga) ? flow.haflaga.toDateString() : 'N/A',
                     flow.diff_in_days,
                     (flow.before_sunset) ? 'Yes' : 'No'
                 ]);
