@@ -15,7 +15,7 @@
         <li ng-repeat="flow in flows | orderBy: '-saw_blood'" class="list-group-item">
           <i ng-show="flow.before_sunset" class="fa fa-sun-o" aria-hidden="true"></i>
           <i ng-hide="flow.before_sunset" class="fa fa-moon-o" aria-hidden="true"></i>
-          <a ui-sref="flow({ flowId: flow.flow_id })">{{flow.saw_blood | date:'short':'UTC'}} <span ng-show="flow.diffInDays">({{flow.diffInDays}} days)</span></a>
+          <a ui-sref="flow({ flowId: flow.flow_id })">{{flow.saw_blood | date:'MMM dd, yyyy':'UTC'}} <span ng-show="flow.diffInDays">({{flow.diffInDays}} days)</span></a>
           <span ng-show="flow.before_sunset" class="label label-warning pull-right">Before Sunset</span>
           <span ng-hide="flow.before_sunset" class="label label-default pull-right">After Sunset</span>
         </li>
