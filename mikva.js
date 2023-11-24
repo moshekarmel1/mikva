@@ -21,7 +21,7 @@ function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows) {
     let hd = new hebcal.HDate(this.saw_blood);
     if (!beforeSunset) hd.setDate(hd.getDate() + 1);
     hd.setMonth(hd.getMonth() + 1)
-    this.yom_hachodesh = removeTime(hd.greg());
+    this.yom_hachodesh = hd.greg();
     //the hefsek tahara can be updated if necessary
     if (hefsekUpdate) {
         this.hefsek = removeTime(hefsekUpdate);
