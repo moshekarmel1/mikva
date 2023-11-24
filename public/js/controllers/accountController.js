@@ -85,7 +85,7 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
                 if (flow.yom_hachodesh) {
                     $scope.events.push({
                         date: flow.yom_hachodesh,
-                        title: 'Yom Hachodesh (' + flow.yom_hachodesh.toLocaleString('en-u-ca-hebrew').split(',')[0] + ')',
+                        title: 'Yom Hachodesh (' + removeTimeZone(flow.yom_hachodesh).toLocaleString('en-u-ca-hebrew').split(',')[0] + ')',
                         status: 'lightblue'
                     });
                 }
