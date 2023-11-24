@@ -1,3 +1,5 @@
+const hebcal = require('hebcal');
+
 function addDays(date, days) {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -15,6 +17,11 @@ function MikvaCalculation(date, beforeSunset, hefsekUpdate, pastFlows) {
     this.mikva = addDays(this.hefsek, 7);
     this.day_30 = addDays(this.mikva, 18);
     this.day_31 = addDays(this.day_30, 1);
+    // calculate Yom hachodesh
+    let hd = new hebcal.HDate(this.saw_blood);
+    if (!beforeSunset) hd.setDate(hd.getDate() + 1);
+    hd.setMonth(hd.getMonth() + 1)
+    this.yom_hachodesh = removeTime(hd.greg());
     //the hefsek tahara can be updated if necessary
     if (hefsekUpdate) {
         this.hefsek = removeTime(hefsekUpdate);

@@ -37,6 +37,7 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
                     flow.day_30 = new Date(flow.day_30);
                     flow.day_31 = new Date(flow.day_31);
                     if (flow.haflaga) flow.haflaga = new Date(flow.haflaga);
+                    if (flow.yom_hachodesh) flow.yom_hachodesh = new Date(flow.yom_hachodesh);
                 });
                 $scope.populateEvents();
                 $scope.todaysEvents = $scope.dateMap[new Date().toISOString().split('T')[0]];
@@ -81,6 +82,13 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
                         status: 'lightblue'
                     });
                 }
+                if (flow.yom_hachodesh) {
+                    $scope.events.push({
+                        date: flow.yom_hachodesh,
+                        title: 'Yom Hachodesh (' + flow.yom_hachodesh.toLocaleString('en-u-ca-hebrew').split(',')[0] + ')',
+                        status: 'lightblue'
+                    });
+                }
             });
             for (let evt of $scope.events) {
                 let key = evt.date.toISOString().split('T')[0];
@@ -115,7 +123,6 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
         };
 
         $scope.addFlow = function (beforeSunset) {
-            console.log($scope.dt);
             flowService.createFlow({
                 date: $scope.dt,
                 beforeSunset: beforeSunset
@@ -129,7 +136,7 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
         };
 
         $scope.export = function () {
-            var A = [['FlowDate', 'HefsekTahara', 'MikvaNight', 'Day30', 'Day31', 'Haflaga', 'DayDifference', 'BeforeSunset']];
+            var A = [['FlowDate', 'HefsekTahara', 'MikvaNight', 'Day30', 'Day31', 'Haflaga', 'YomHachodesh', 'DayDifference', 'BeforeSunset']];
 
             $scope.flows.forEach(function (flow) {
                 A.push([
@@ -139,6 +146,7 @@ angular.module('mikva').controller('AccountCtrl', ['flowService', 'authService',
                     flow.day_30.toDateString(),
                     flow.day_31.toDateString(),
                     (flow.haflaga) ? flow.haflaga.toDateString() : 'N/A',
+                    (flow.yom_hachodesh) ? flow.yom_hachodesh.toDateString() : 'N/A',
                     flow.diff_in_days,
                     (flow.before_sunset) ? 'Yes' : 'No'
                 ]);

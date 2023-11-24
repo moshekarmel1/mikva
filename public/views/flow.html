@@ -25,10 +25,14 @@
               <label class="control-label" for="day31">Day 31</label>
               <input type="date" name="day31" disabled="disabled" ng-model="flow.day_31" class="form-control" />
           </div>
-          <div class="form-group">
-              <label class="control-label" for="haflaga">Haflaga ({{flow.diffInDays}} days)</label>
+          <div class="form-group" ng-if="flow.haflaga">
+              <label class="control-label" for="haflaga">Haflaga ({{flow.diff_in_days}} days)</label>
               <input type="date" name="haflaga" disabled="disabled" ng-model="flow.haflaga" class="form-control" />
           </div>
+          <div class="form-group" ng-if="flow.yom_hachodesh">
+            <label class="control-label" for="haflaga">Yom Hachodesh - {{yom_hachodesh}}</label>
+            <input type="date" name="yom_hachodesh" disabled="disabled" ng-model="flow.yom_hachodesh" class="form-control" />
+        </div>
           <div class="form-group">
               <div class="checkbox">
                 <label>

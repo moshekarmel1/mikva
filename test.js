@@ -54,6 +54,7 @@ describe('MikvaCalculation', () => {
 
     expect(mikvaCalculation.haflaga).toEqual(new Date('2023-11-20T05:00:00.000Z')); // 30 days after last flow
     expect(mikvaCalculation.diff_in_days).toEqual(29); // difference between date and last flow
+    expect(mikvaCalculation.yom_hachodesh).toEqual(new Date('2023-11-21T05:00:00.000Z')); // 30 days after last flow
   });
 
   test('it should handle past flows and calculate haflaga and diff_in_days when before sunset and previous was after sunset', () => {

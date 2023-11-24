@@ -24,6 +24,7 @@ exports.modules = {
                     REFERENCES app_user (user_id)
         );
         CREATE UNIQUE INDEX IF NOT EXISTS unique_username ON app_user (username);
+        ALTER TABLE app_flow ADD COLUMN IF NOT EXISTS yom_hachodesh TIMESTAMP NULL;
     `,
     createUser: `
         INSERT INTO app_user (username, hash, salt, google_id) VALUES 
@@ -40,8 +41,8 @@ exports.modules = {
         Select * From app_user Where google_id = $1;
     `,
     createFlow: `
-        INSERT INTO app_flow (saw_blood, hefsek, mikva, day_30, day_31, haflaga, diff_in_days, before_sunset, user_id) VALUES 
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO app_flow (saw_blood, hefsek, mikva, day_30, day_31, haflaga, yom_hachodesh, diff_in_days, before_sunset, user_id) VALUES 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *;
     `,
     updateFlow: `
@@ -51,7 +52,8 @@ exports.modules = {
             mikva = $4,
             day_30 = $5,
             day_31 = $6,
-            before_sunset = $7
+            yom_hachodesh = $7,
+            before_sunset = $8
         WHERE flow_id = $1
         RETURNING *;
     `,

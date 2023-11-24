@@ -1,5 +1,6 @@
 angular.module('mikva').controller('FlowCtrl', ['flowService', '$state', '$stateParams', '$scope',
 function(flowService, $state, $stateParams, $scope){
+    $scope.yom_hachodesh = '';
     function removeTimeZone(d) {
         d.setTime(d.getTime() + d.getTimezoneOffset() * 60000);
         return d;
@@ -45,5 +46,10 @@ function(flowService, $state, $stateParams, $scope){
         $scope.flow.day_30 = removeTimeZone(new Date($scope.flow.day_30));
         $scope.flow.day_31 = removeTimeZone(new Date($scope.flow.day_31));
         if($scope.flow.haflaga) $scope.flow.haflaga = removeTimeZone(new Date($scope.flow.haflaga));
+        if($scope.flow.yom_hachodesh) {
+            $scope.flow.yom_hachodesh = removeTimeZone(new Date($scope.flow.yom_hachodesh));
+            $scope.yom_hachodesh = $scope.flow.yom_hachodesh.toLocaleString('en-u-ca-hebrew').split(',')[0];
+        }
+
     }
 }]);

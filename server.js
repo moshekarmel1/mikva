@@ -142,7 +142,7 @@ app.get('/status', auth, function (req, res, next) {
     db.query(dbScripts.findFlowsByUser, [req.payload._id], function (err, flowResponse) {
         if (err) return next(err);
 
-        const today = removeTime(new Date()).getTime();
+        const today = removeTime(new Date());
         const flows = flowResponse.rows;
         flows.forEach(flow => {
             // check red
@@ -162,6 +162,9 @@ app.get('/status', auth, function (req, res, next) {
             }
             if (flow.haflaga && moment(flow.haflaga).isSame(today, 'day')) {
                 yellow = 'Haflaga';
+            }
+            if (flow.yom_hachodesh && moment(flow.yom_hachodesh).isSame(today, 'day')) {
+                yellow = 'Yom Hachodesh';
             }
         });
 
@@ -185,7 +188,6 @@ app.post('/flows', auth, function (req, res, next) {
         let date = req.body.date;
         // remove timezone and convert to UTC
         date = new Date(date).toISOString().split('T')[0] + 'T00:00:00.000'
-        console.log(date, typeof date, req.body);
         const beforeSunset = req.body.beforeSunset;
         const mc = new MikvaCalculation(date, beforeSunset, null, flowResponse.rows);
         db.query(dbScripts.createFlow, [
@@ -195,6 +197,7 @@ app.post('/flows', auth, function (req, res, next) {
             mc.day_30,
             mc.day_31,
             mc.haflaga,
+            mc.yom_hachodesh,
             mc.diff_in_days,
             mc.before_sunset,
             req.payload._id
@@ -236,6 +239,7 @@ app.put('/flows/:flow', auth, function (req, res, next) {
         flow.mikva,
         flow.day_30,
         flow.day_31,
+        flow.yom_hachodesh,
         flow.before_sunset
     ], function (err, flowResponse) {
         if (err) return next(err);
